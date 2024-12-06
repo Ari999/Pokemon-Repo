@@ -1,0 +1,170 @@
+<!-- Include necessary CSS for table styling -->
+<style>
+    /* Basic table styles */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    /* Styling for checkboxes */
+    .checkbox-cell {
+        width: 50px;
+        text-align: center;
+    }
+
+    /* Container for scrollable content */
+    .scrollable-container {
+        max-height: 60vh; /* Adjust the maximum height as needed */
+        overflow-y: auto;
+        margin-top: 5px; /* Adjust spacing from navbar */
+        margin-bottom: 10px; /* Adjust spacing from footer */
+        margin: 0 auto;
+        width: 60%;
+    }
+
+    /* Style for submit button */
+    #submit-button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        border-radius: 50px;
+        display: block;
+        margin: 0 auto;
+    }
+
+    #submit-button:hover {
+        background-color: #0056b3;
+    }
+    
+    h1 {
+        text-align: center;
+    }
+    /* Logout link styles */
+    a.logout-link {
+        font-size: 16px;
+        color: white; /* Set the color to white */
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+    /* Logout link hover styles */
+    a.logout-link:hover {
+        color: rgb(250, 46, 0);
+    }
+</style>
+
+<!-- Render the table with checkboxes -->
+<h1>Pokemon Merchandise</h1>
+
+<div class="scrollable-container">
+    <table>
+        <thead>
+            <tr>
+                <th></th> <!-- Empty header for checkbox -->
+                <th>Description</th>
+                <th>Type</th>
+                <th>URL</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each rows}}
+                <tr>
+                    <td class="checkbox-cell">
+                        <input type="checkbox" class="merch-checkbox" data-id="{{this.id}}">
+                    </td>
+                    <td>{{this.description}}</td>
+                    <td>{{this.type}}</td>
+                    <td><a href="{{this.url}}" target="_blank">{{this.url}}</a></td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    <body>
+        <div style="position: absolute; top: 20px; right: 10px;">
+            <a href="/logout" class="logout-link">Logout</a>
+        </div>
+    </body>
+</div>
+
+<button id="submit-button">Bookmark Merchandise</button>
+
+<!-- JavaScript to handle checkbox selection and data storage -->
+<script>
+    // Function to set the text of the submit button based on the current route
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentPath = window.location.pathname;
+        const submitButton = document.getElementById('submit-button');
+
+        if (currentPath === '/merch') {
+            submitButton.textContent = 'Bookmark Merchandise';
+        } else if (currentPath === '/saved-merch') {
+            submitButton.textContent = 'Remove Merchandise';
+        }
+    });
+
+    // Function to handle submitting selected merchandise based on the current route
+    document.getElementById('submit-button').addEventListener('click', async () => {
+        const selectedMerchIds = [];
+        document.querySelectorAll('.merch-checkbox:checked').forEach(checkbox => {
+            selectedMerchIds.push(checkbox.getAttribute('data-id'));
+        });
+
+        const currentPath = window.location.pathname;
+
+        let actionEndpoint;
+        if (currentPath === '/merch') {
+            // Insert selected records into user-specific merchandise table
+            actionEndpoint = '/store-merch';
+        } else if (currentPath === '/saved-merch') {
+            // Remove selected records from user-specific merchandise table
+            actionEndpoint = '/delete-merch';
+        }
+
+        if (!actionEndpoint || selectedMerchIds.length === 0) {
+            alert('Invalid action or no merchandise selected.');
+            return;
+        }
+
+        try {
+            // Send the list of selected merchandise IDs to the server for the specified action
+            const response = await fetch(actionEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ merchIds: selectedMerchIds })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to perform action');
+            }
+
+            alert('Action successfully performed!');
+            
+            // Reset checkboxes after successful action
+            document.querySelectorAll('.merch-checkbox:checked').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+
+            // Reload the page after successful submission (optional)
+            location.reload();
+        } catch (error) {
+            console.error('Error performing action:', error);
+            alert('Failed to perform action. Please try again.');
+        }
+    });
+</script>

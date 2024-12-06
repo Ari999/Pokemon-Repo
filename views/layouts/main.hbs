@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: #2055d1;
+            padding: 2px;
+            text-align: center;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #d40000;
+            font-weight: bold;
+        }
+
+        nav ul li a:hover {
+            color: #ffcc00;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Pokecollecting</h1>
+        <nav>
+            <ul>
+                <li>
+                    {{#if isLoggedIn}}
+                        <a href="/home">Home</a>
+                    {{else}}
+                        <a href="/welcome">Home</a>
+                    {{/if}}
+                </li>
+                <li><a href="/games">Games</a></li>
+                <li><a href="/merch">Merch</a></li>
+            </ul>
+            <ul>
+                <li><a href="/saved-games">Saved Games</a></li>
+                <li><a href="/saved-merch">Saved Merch</a></li>
+            </ul>
+        </nav>
+    </header>
+        <main>
+            {{{body}}}
+        </main>
+    </div>
+
+    <footer>
+        <p>© 2024 Pokemon Depo</p>
+    </footer>
+</body>
+</html>
